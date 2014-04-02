@@ -223,9 +223,9 @@ void printHelp(char* aMessage){
 	if(aMessage){
 		fprintf(stdout, "%s\n", aMessage);	
 	}
-	fprintf(stdout, "generator, version 0.1\n\n");
+	fprintf(stdout, "passgen, version 0.1\n\n");
 
-	fprintf(stdout, "usage : generator [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals]\n\n");
+	fprintf(stdout, "usage : passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals]\n\n");
 	fprintf(stdout, "  n number : number of passwords to generate\n");
 	fprintf(stdout, "  w wordFile : path to a text file containing a word per line\n");
 	fprintf(stdout, "  s specialFile : path to a text file containing a special character per line\n");
