@@ -115,17 +115,26 @@ void makeWordPassword(Params aParams, char* aPassword){
 	char* wCurrentWord;
 	int wSize;
 	int wI;
+  int wWordsUsed;
 
 	wDepth = 0;
+  wWordsUsed = 0;
 	wSize = aParams.pLengthOfPasswords - aParams.pNumberOfSpecials - aParams.pNumberOfNumbers;
 	for(wI = 0 ; wI < aParams.pLengthOfPasswords; wI++){
 		aPassword[wI] = 0;
 	}
 	while (wDepth < 1000000 && strlen(aPassword) < wSize ) {
-		wCurrentWord = aParams.pWords[rand() % aParams.pWordsLoaded];
-		if (strlen(wCurrentWord) + strlen(aPassword) <= wSize) {
+		if(aParams.pNumberOfWords > 0 && wWordsUsed > aParams.pNumberOfWords){
+      break;
+    }
+    wCurrentWord = aParams.pWords[rand() % aParams.pWordsLoaded];
+    if (strlen(wCurrentWord) + strlen(aPassword) <= wSize) {
 			strcat(aPassword, wCurrentWord);
+      wWordsUsed++;
 		}
 		wDepth++;
 	}
+  if(aParams.pNumberOfWords > 0 && wWordsUsed != aParams.pNumberOfWords){
+    makeWordPassword(aParams, aPassword);
+  }
 }

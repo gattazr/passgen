@@ -27,6 +27,7 @@ Params* loadParams(int aArgc, char** aArgv){
 	wParams->pNumberOfSpecials = 0;
 	wParams->pNumberOfCapitals = 0;
 	wParams->pNumberOfNumbers = 0;
+  wParams->pNumberOfWords = 0;
 
 	for(wI = 0; wI < aArgc ; wI++){
 		if(strcmp(aArgv[wI], "-h") == 0 || strcmp(aArgv[wI], "--help") == 0) {
@@ -135,6 +136,23 @@ Params* loadParams(int aArgc, char** aArgv){
 				exit(-1);
 			}
 		}
+    else if(strcmp(aArgv[wI], "-lw") == 0) {
+      // the -hbs flagh indicates the next number will be number of words to used
+      //
+      if(wI + 1 < aArgc){
+        wI++;
+        int wInt = atoi(aArgv[wI]);
+        if(wInt > 0){
+          wParams->pNumberOfWords = wInt;
+        }else{
+          printHelp("generator : option -lw : requires a number greater than 0");
+          exit(-1);
+        }
+      }else{
+        printHelp("generator : option -lw : requires a number greater than 0");
+        exit(-1);
+      }
+    }
 	}
 
   // if no file were loaded for the special chars, load every special in the ASCII table
@@ -181,10 +199,14 @@ Params* loadParams(int aArgc, char** aArgv){
 		fprintf(stderr, "generator : the password(s) can not contain this many capitals\n");
 		exit(-1);
 	}
-	if(wNumberOfLetters < 0){
-		fprintf(stderr, "generator : the password(s) can not contain this many specials and numbers\n");
-		exit(-1);
-	}
+  if(wNumberOfLetters < 0){
+  fprintf(stderr, "generator : the password(s) can not contain this many specials and numbers\n");
+  exit(-1);
+  }
+  if(wParams->pNumberOfWords > 0 && wParams->pWordsLoaded == 0){
+    fprintf(stderr, "generator : the horse battery staple methods can only be used with a wordfile loaded\n");
+    exit(-1);
+  }
 
 	return wParams;
 }
@@ -293,7 +315,7 @@ void printHelp(char* aMessage){
 	}
 	fprintf(stdout, "passgen, version 0.1\n\n");
 
-	fprintf(stdout, "usage : passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals]\n\n");
+	fprintf(stdout, "usage : passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals] [-lw words]\n\n");
 	fprintf(stdout, "  n number : number of passwords to generate\n");
 	fprintf(stdout, "  w wordFile : path to a text file containing a word per line\n");
 	fprintf(stdout, "  s specialFile : path to a text file containing a special character per line\n");
@@ -301,6 +323,7 @@ void printHelp(char* aMessage){
 	fprintf(stdout, "  ls specials : number of specials to use\n");
 	fprintf(stdout, "  ln numbers : number of specials to use\n");
 	fprintf(stdout, "  lc capitals : number of capitals to use\n");
+  fprintf(stdout, "  lw words : number of words to use\n");
 
 	fprintf(stdout, "\nBy default, it generates a 16 character long password with only lower case letters\n");
 }

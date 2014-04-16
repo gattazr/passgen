@@ -13,7 +13,7 @@ Version
 How to use
 ----------
 ```sh
-passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals]
+passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals] [-lw words]
 ```
 
 ```sh
@@ -24,5 +24,6 @@ passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-
   ls specials : number of specials to use
   ln numbers : number of specials to use
   lc capitals : number of capitals to use
+  lw words : number of words to use
 ```
 By default, it generates a 16 character long password with only lower case letters
