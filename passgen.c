@@ -5,47 +5,52 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-/*
-if used without params
-	generate will create a random password of 16 char with 2 numbers and 1 special
-	Use ASCII tables
-Possible params :
-	-n : how many params to generate
-	-w : path to file contaning words
-	-s : path to file contaning specials
-	-l : length of the password
-	-ls : number of specials
-	-ln : number of numbers to use
-	-lc : number of capitals
-*/
+
+/**
+ * main is the entry point of the programm. Since this programm accepts params,
+ * this function has the two default params.
+ *
+ * @param aArgc : number of params given to the programm
+ * @param aArgv : params given to the params
+ *
+ * @return int : this function will return 0 and exit the program is no error happened
+ */
 int main(int aArgc, char** aArgv){
 	srand ( time(NULL) );
 	Params* wParams = loadParams(aArgc, aArgv);
-	
+
 	makePassword(*wParams);
-	
+
 	unloadParams(wParams);
 	return 0;
 }
 
 
+/**
+ * makePassword is the funciton that generates the password. The function will generate
+ * passwords following the rules defines in the given Param structure.
+ *
+ * @param aParams Params : structure containing the password generation rules
+ */
 void makePassword(Params aParams){
 	int wNumberofChars = aParams.pLengthOfPasswords - aParams.pNumberOfSpecials - aParams.pNumberOfNumbers;
 	char wPassword[aParams.pLengthOfPasswords + 1];
 	int wRandIndex;
 	int wI, wJ, wK;
 	for(wI = 0; wI < aParams.pNumberOfPasswords; wI++){
+		// this function will loop to create as many password as required
 
-		// check if using words or randomly generated
 		if(aParams.pWordsLoaded > 0){
+			// if using words, make a wordPassword
 			makeWordPassword(aParams, wPassword);
 			while (strlen(wPassword) != wNumberofChars) {
+				// while the length of the wordPassword is not good, the function will relaunched
 				makeWordPassword(aParams, wPassword);
 			}
 		}else{
 			for(wJ = 0 ; wJ < aParams.pLengthOfPasswords; wJ++){
 				wPassword[wJ] = 0;
-			}	
+			}
 			for(wJ = 0 ; wJ < wNumberofChars; wJ++){
 				wPassword[wJ] = 'a' + rand() % 26;
 			}
@@ -55,18 +60,18 @@ void makePassword(Params aParams){
 		for(wJ = 0 ; wJ < aParams.pNumberOfCapitals; wJ++){
 			wRandIndex = rand() % wNumberofChars;
 			if( wPassword[wRandIndex] >= 'a' && wPassword[wRandIndex] <= 'z'){
-				wPassword[wRandIndex] = 'A' + wPassword[wRandIndex] - 'a';	
+				wPassword[wRandIndex] = 'A' + wPassword[wRandIndex] - 'a';
 			}else{
 				wJ--;
 			}
 		}
-		
+
 		// add numbers
 		for(wJ = 0 ; wJ < aParams.pNumberOfNumbers; wJ++){
 			if(wNumberofChars + wJ == 0){
 				wRandIndex = 0;
 			}else{
-				wRandIndex = rand() % ( wNumberofChars + wJ );	
+				wRandIndex = rand() % ( wNumberofChars + wJ );
 			}
 			char wRandNumber = rand() % 10 + '0';
 			for(wK = aParams.pLengthOfPasswords; wK > wRandIndex; wK--){
@@ -75,62 +80,31 @@ void makePassword(Params aParams){
 			wPassword[wRandIndex] = wRandNumber;
 		}
 
-		//add special chars
-		char** wSpecials;
-		int wNumberOfSpecials;
-		if(aParams.pSpecialsLoaded > 0){
-			wSpecials = aParams.pSpecials;
-			wNumberOfSpecials = aParams.pNumberOfSpecials;
-		}else{
-			wSpecials = malloc(sizeof(char*)*34);
-			int wIndex = 0;
-			for(wJ = 0; wJ < 15; wJ++){
-				wSpecials[wIndex] = malloc(sizeof(char));
-				wSpecials[wIndex][0] = '!' + wJ;
-				wIndex++;
-			}
-			for(wJ = 0; wJ < 7; wJ++){
-				wSpecials[wIndex] = malloc(sizeof(char));
-				wSpecials[wIndex][0] = ':' + wJ;
-				wIndex++;
-			}
-			for(wJ = 0; wJ < 6; wJ++){
-				wSpecials[wIndex] = malloc(sizeof(char));
-				wSpecials[wIndex][0] = '[' + wJ;
-				wIndex++;
-			}
-			for(wJ = 0; wJ < 6; wJ++){
-				wSpecials[wIndex] = malloc(sizeof(char));
-				wSpecials[wIndex][0] = '{' + wJ;
-				wIndex++;
-			}
-			wNumberOfSpecials = 34;
-		}
-
+		// add special chars
 		for(wJ = 0 ; wJ < aParams.pNumberOfSpecials; wJ++){
-			wRandIndex = rand() % (aParams.pNumberOfNumbers + wNumberofChars);			
-			int wRandSpecial = rand() % wNumberOfSpecials;
-			char wSpecial = wSpecials[wRandSpecial][0];
+			wRandIndex = rand() % (aParams.pNumberOfNumbers + wNumberofChars);
+			int wRandSpecial = rand() % aParams.pSpecialsLoaded;
+			char wSpecial = aParams.pSpecials[wRandSpecial][0];
 
 			for(wK = aParams.pLengthOfPasswords; wK > wRandIndex; wK--){
 				wPassword[wK] = wPassword[wK - 1];
 			}
 			wPassword[wRandIndex] = wSpecial;
-			
-		}
 
-		//free special chars if allocated
-		if(aParams.pSpecialsLoaded == 0){
-			for(wJ = 0; wJ < wNumberOfSpecials; wJ++){
-				free(wSpecials[wJ]);
-			}
-			free(wSpecials);
 		}
-
 		fprintf(stdout, "%s\n", wPassword);
+		// end the generation by printing out the password to stdout
 	}
 }
 
+/**
+ * makePassword is a function used to make a password using words. This function
+ * will modify a given string to a string composed of words in the given Param structure
+ * while following the rules in the rules in the Param struct
+ *
+ * @param aParams Param : structure containing the generation rules
+ * @param aPassword char* : String in which the generator password will be put
+ */
 void makeWordPassword(Params aParams, char* aPassword){
 	int wDepth;
 	char* wCurrentWord;
