@@ -16,11 +16,6 @@ How to use
 passgen [-n number] [-w wordFile] [-s specialFile] [-l length] [-ls specials] [-ln numbers] [-lc capitals]
 ```
 
-```
-n number
-```
-
-
 ```sh
   n number : number of passwords to generate
   w wordFile :  path to a text file containing a word per line

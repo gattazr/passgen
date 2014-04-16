@@ -82,7 +82,12 @@ void makePassword(Params aParams){
 
 		// add special chars
 		for(wJ = 0 ; wJ < aParams.pNumberOfSpecials; wJ++){
-			wRandIndex = rand() % (aParams.pNumberOfNumbers + wNumberofChars);
+      int wPassLength = strlen(wPassword);
+      if(wPassLength > 0){
+          wRandIndex = rand() % (wPassLength);
+      }else{
+        wRandIndex = 0;
+      }
 			int wRandSpecial = rand() % aParams.pSpecialsLoaded;
 			char wSpecial = aParams.pSpecials[wRandSpecial][0];
 
@@ -90,8 +95,8 @@ void makePassword(Params aParams){
 				wPassword[wK] = wPassword[wK - 1];
 			}
 			wPassword[wRandIndex] = wSpecial;
-
 		}
+
 		fprintf(stdout, "%s\n", wPassword);
 		// end the generation by printing out the password to stdout
 	}
